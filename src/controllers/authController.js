@@ -60,21 +60,55 @@ const createTask = async (req, res) => {
       });
 
       res.status(201).json(taskWithItems);
-      res.status(201).json(result);
    } catch (err) {
       res.status(500).json({ error: 'Erro ao criar tarefa' });
    }
 };
 
-// Obter tarefas do usuário
+// Obter tarefas do usuário pelo Id
 const getTask = async (req, res) => {
+   const { id } = req.params; // Pega o id da URL
+
    try {
-      const tasks = await Task.findAll({ where: { userId: req.user.id }, include: ['items'] });
-      res.json(tasks);
+      // Busca a task pelo id e inclui os TaskItems
+      const task = await Task.findOne({
+         where: { id },
+         include: [{ model: TaskItem }]  // Inclui o modelo TaskItem
+      });
+
+      // Verifica se a task foi encontrada
+      if (!task) {
+         return res.status(404).json({ error: 'Tarefa não encontrada' });
+      }
+
+      // Retorna a task e seus itens
+      res.status(200).json(task);
    } catch (err) {
+      console.error('Erro ao buscar tarefa:', err);
+      res.status(500).json({ error: 'Erro ao buscar tarefa' });
+   }
+};
+
+const getAllTask = async (req, res) => {
+   const { userId } = req.params; // Pegar o userId da URL
+
+   try {
+      const tasks = await Task.findAll({
+         where: { userId }, // Filtra as tarefas pelo userId
+         include: [{ model: TaskItem }]  // Inclui os TaskItems
+      });
+
+      if (!tasks.length) {
+         return res.status(404).json({ error: 'Nenhuma tarefa encontrada para este usuário' });
+      }
+
+      res.status(200).json(tasks);
+   } catch (err) {
+      console.error('Erro ao buscar tarefas:', err);
       res.status(500).json({ error: 'Erro ao buscar tarefas' });
    }
 };
+
 
 // Rota para atualizar uma tarefa existente
 const updateTask = async (req, res) => {
@@ -175,5 +209,5 @@ const deleteTaskItems = async (req, res) => {
 };
 
 module.exports = {
-   login, getTask, createTask, deleteTask, updateTask, deleteTaskItems
+   login, getTask, createTask, deleteTask, updateTask, deleteTaskItems, getAllTask
 };

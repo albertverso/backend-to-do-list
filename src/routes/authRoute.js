@@ -1,12 +1,14 @@
 const app = require('../routes/appRoute.js');
 const {authenticateToken} = require('../middleware/authMiddleware')
-const {login, getTask, createTask, deleteTask, updateTask, deleteTaskItems} = require('../controllers/authController.js')
+const {login, getTask, createTask, deleteTask, updateTask, deleteTaskItems, getAllTask} = require('../controllers/authController.js')
 
 // Endpoint de login
 app.post('/v1/login', login);
 
 // Endpoint de pegar task só é autorizado com token
-app.get('/v1/task', authenticateToken, getTask);
+app.get('/v1/task/:id', authenticateToken, getTask);
+
+app.get('/v1/task/all/:userId', authenticateToken, getAllTask);
 
 // Endpoint de criar task só é autorizado com token
 app.post('/v1/task', authenticateToken, createTask);
