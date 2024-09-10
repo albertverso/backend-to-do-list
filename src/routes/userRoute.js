@@ -10,7 +10,7 @@ app.get('/v1/user/:id', authenticateToken, getUser);
 app.post('/v1/user', upload.single('profilePic'), CreateUser);
 
 // Atualizar um usuário por ID
-app.put('/v1/user/:id', authenticateToken, UpdateUser);
+app.put('/v1/user/:id', authenticateToken, upload.single('profilePic'), UpdateUser);
 
 // Deletar um usuário por ID
 app.delete('/v1/user/:id', authenticateToken, DeleteUser);
