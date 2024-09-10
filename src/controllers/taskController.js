@@ -77,7 +77,6 @@ const getAllTask = async (req, res) => {
 // Rota para atualizar uma tarefa existente
 const updateTask = async (req, res) => {
    const { taskId } = req.params;
-   console.log("aaaaaaaaaaa" + taskId)
    const { title, description, finishDate, progress, taskItems, favorite } = req.body;
 
    try {
@@ -92,7 +91,7 @@ const updateTask = async (req, res) => {
       task.description = description || task.description;
       task.finishDate = finishDate || task.finishDate;
       task.progress = progress || task.progress;
-      task.favorite = favorite || task.favorite
+      task.favorite = favorite !== undefined ? favorite : task.favorite;
 
       await task.save();
 
