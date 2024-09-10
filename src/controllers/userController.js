@@ -21,6 +21,14 @@ const CreateUser = async (req, res) => {
     }
   };
 
+const getUser = async (req, res) => {
+try{
+    User.findOne({ where: { id: req.params.id } }).then((result) => res.send(result))
+} catch (error) {
+    res.status(500).json({ error: 'Erro ao buscar usuário' });
+}
+};
+
 // Atualizar um usuário por ID
 const UpdateUser = async (req, res) => {
     try {
@@ -42,5 +50,5 @@ const DeleteUser = async (req, res) => {
 };
 
 module.exports = {
-    CreateUser, UpdateUser, DeleteUser
+    CreateUser, UpdateUser, DeleteUser, getUser
   };
