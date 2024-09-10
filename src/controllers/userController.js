@@ -1,4 +1,5 @@
 const {User} = require('../models/user')
+const bcrypt = require('bcryptjs');
 
 // Adicionar um novo usuário
 const CreateUser = async (req, res) => {
@@ -30,13 +31,46 @@ try{
 };
 
 // Atualizar um usuário por ID
+// Atualizar um usuário existente
 const UpdateUser = async (req, res) => {
     try {
-        User.update(req.body, { where: { id: req.params.id } }).then((result) => res.send(result))
+        const { firstName, lastName, email, password } = req.body;
+        const profilePic = req.file ? req.file.path : null; // Pega a nova URL da imagem, se houver
+
+        // Buscar o usuário pelo ID
+        const user = await User.findOne({ where: { id: req.params.id } });
+
+        // Verifica se o usuário existe
+        if (!user) {
+            return res.status(404).json({ error: 'Usuário não encontrado' });
+        }
+
+        // Atualiza os campos se fornecidos
+        user.firstName = firstName || user.firstName;
+        user.lastName = lastName || user.lastName;
+        user.email = email || user.email;
+
+        // Verifica se a senha foi enviada e, se sim, codifica a nova senha
+        if (password) {
+            const hashedPassword = await bcrypt.hash(password, 10);
+            user.password = hashedPassword;
+        }
+        
+        // Atualiza a foto de perfil, se fornecida
+        if (profilePic) {
+            user.profilePic = profilePic;
+        }
+
+        // Salva as alterações no banco de dados
+        await user.save();
+
+        // Retorna o usuário atualizado
+        res.status(200).send(user);
     } catch (error) {
-        res.status(500).json({ error: 'Erro ao atualizar usuário' });
+        res.status(500).json({ error: 'Erro ao atualizar o usuário' });
     }
 };
+
 
 // Deletar um usuário por ID
 const DeleteUser = async (req, res) => {
