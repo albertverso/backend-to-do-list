@@ -1,26 +1,44 @@
 const {User} = require('../models/user')
 const bcrypt = require('bcryptjs');
 
-// Adicionar um novo usuário
+// Função para verificar se é uma URL válida
+function isValidUrl(url) {
+    try {
+      new URL(url);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+  
+// Função para criar o usuário
 const CreateUser = async (req, res) => {
     try {
-        const { firstName,
-            lastName, email, password } = req.body;
-        const profilePic = req.file ? req.file.path : null; // Pega a URL da imagem do Cloudinary
-
-        const user = await User.create({
-            firstName: firstName,
-            lastName: lastName,
-            email: email,
-            password: password,
-            profilePic: profilePic, // Salva a URL da imagem no banco de dados
-        });
-
-        res.status(201).send(user)
+      const { firstName, lastName, email, password } = req.body;
+      let profilePic = null;
+  
+      // Verifica se o campo profilePic no corpo da requisição é uma URL válida
+      if (req.body.profilePic && typeof req.body.profilePic === 'string' && isValidUrl(req.body.profilePic)) {
+        profilePic = req.body.profilePic; // Usa a URL fornecida diretamente
+      } else if (req.file) {
+        // Se um arquivo foi enviado, usa o path do Cloudinary
+        profilePic = req.file.path;
+      }
+  
+      // Cria o usuário com os dados fornecidos
+      const user = await User.create({
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        password: password,
+        profilePic: profilePic, // Salva a URL da imagem ou null
+      });
+  
+      res.status(201).send(user);
     } catch (error) {
-        res.status(500).json({ error: 'Erro ao criar usuário' });
+      res.status(500).json({ error: 'Erro ao criar usuário' });
     }
-  };
+};
 
 const getUser = async (req, res) => {
 try{

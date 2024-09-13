@@ -6,10 +6,10 @@ const bcrypt = require('bcryptjs');
 
 const User = sequelize.define('User', {
    firstName: { type: DataTypes.STRING, allowNull: false },
-   lastName: { type: DataTypes.STRING, allowNull: false },
+   lastName: { type: DataTypes.STRING, allowNull: true },
    email: { type: DataTypes.STRING, allowNull: false, unique: true },
    password: { type: DataTypes.STRING, allowNull: false },
-   profilePic: { type: DataTypes.STRING, allowNull: true },  // Foto em base64
+   profilePic: { type: DataTypes.TEXT, allowNull: true },  // Foto em base64
 }, {
    hooks: {
       beforeCreate: async (user) => {
@@ -22,6 +22,6 @@ const User = sequelize.define('User', {
 });
 
 // Sincronizar o modelo com o banco de dados    
-sequelize.sync(); // Usa alter para ajustar a tabela existente
+sequelize.sync({alter:true}); // Usa alter para ajustar a tabela existente
 
 module.exports = {User};

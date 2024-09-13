@@ -48,7 +48,6 @@ const getTask = async (req, res) => {
       // Retorna a task e seus itens
       res.status(200).json(task);
    } catch (err) {
-      console.error('Erro ao buscar tarefa:', err);
       res.status(500).json({ error: 'Erro ao buscar tarefa' });
    }
 };
@@ -68,7 +67,6 @@ const getAllTask = async (req, res) => {
 
       res.status(200).json(tasks);
    } catch (err) {
-      console.error('Erro ao buscar tarefas:', err);
       res.status(500).json({ error: 'Erro ao buscar tarefas' });
    }
 };
@@ -166,7 +164,6 @@ const deleteTaskItems = async (req, res) => {
 
       res.status(200).json({ message: 'TaskItem excluído com sucesso.' });
    } catch (error) {
-      console.error(error);
       res.status(500).json({ message: 'Erro ao excluir TaskItem.' });
    }
 };
@@ -181,13 +178,18 @@ const getFavorites = async (req, res) => {
             include: [{ model: TaskItem }]  // Inclui os TaskItems
         });
 
+
+        if (!tasks.length) {
+            return res.status(404).json({ error: 'Nenhuma tarefa favorita encontrada para este usuário' });
+        }
+
+      
         if (!tasks.length) {
             return res.status(404).json({ error: 'Nenhuma tarefa favorita encontrada para este usuário' });
         }
 
         res.status(200).json(tasks);
     } catch (err) {
-        console.error('Erro ao buscar tarefas:', err);
         res.status(500).json({ error: 'Erro ao buscar tarefas' });
     }
 };
