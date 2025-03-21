@@ -11,13 +11,13 @@ const login = async (req, res) => {
 
       // Se o usuário não for encontrado ou a senha estiver incorreta
       if (!user) {
-         return res.status(404).json({ message: 'Credenciais inválidas' });
+         return res.status(404).json({ message: 'Usuário não encontrado' });
       }
 
       const passwordMatch = await bcrypt.compare(password, user.password);
 
       if (!passwordMatch) {
-         return res.status(401).json({ message: 'Credenciais inválidas' });
+         return res.status(401).json({ message: 'Senha incorreta' });
       }
 
       // Gerar o token JWT com id e email do usuário
